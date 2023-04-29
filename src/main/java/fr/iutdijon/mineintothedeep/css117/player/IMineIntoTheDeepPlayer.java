@@ -5,7 +5,10 @@ import fr.iutdijon.mineintothedeep.css117.MineIntoTheDeepScores;
 import fr.iutdijon.mineintothedeep.css117.message.MineIntoTheDeepSonarMessage;
 
 public interface IMineIntoTheDeepPlayer {
+    int getMyPlayerId();
     int getTurnNumber();
+    PickageUpgrade getPickaxeUpgrade(int dwarfId);
+
     void endOfTurn();
     MineIntoTheDeepMap getMap();
     void moveDwarf(int dwarfId, int dx, int dy);

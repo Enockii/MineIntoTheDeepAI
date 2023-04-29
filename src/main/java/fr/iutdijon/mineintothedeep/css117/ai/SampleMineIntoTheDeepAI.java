@@ -12,6 +12,9 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
         // Get the current map and the current scores
         MineIntoTheDeepMap map = player.getMap();
         MineIntoTheDeepScores scores = player.getScores();
+        int myScore = scores.getScore(player.getMyPlayerId());
+
+        if
 
         throw new UnsupportedOperationException("Not implemented yet !");
     }

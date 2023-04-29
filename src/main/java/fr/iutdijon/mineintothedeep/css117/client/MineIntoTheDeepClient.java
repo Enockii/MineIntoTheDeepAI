@@ -5,12 +5,15 @@ import fr.iutdijon.mineintothedeep.css117.MineIntoTheDeepScores;
 import fr.iutdijon.mineintothedeep.css117.ai.MineIntoTheDeepAI;
 import fr.iutdijon.mineintothedeep.css117.message.*;
 import fr.iutdijon.mineintothedeep.css117.player.IMineIntoTheDeepPlayer;
+import fr.iutdijon.mineintothedeep.css117.player.PickageUpgrade;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
 
@@ -44,57 +47,7 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
         this.teamName = teamName;
         this.address = address;
         this.mineIntoTheDeepClientAI = mineIntoTheDeepClientAI;
-        this.player = new IMineIntoTheDeepPlayer() {
-            @Override
-            public int getTurnNumber() {
-                return MineIntoTheDeepClient.this.currentTurnNumber;
-            }
-
-            @Override
-            public void endOfTurn() {
-                MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepEndTurnMessage());
-            }
-
-            @Override
-            public MineIntoTheDeepMap getMap() {
-                return MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepMapMessage());
-            }
-
-            @Override
-            public void moveDwarf(int dwarfId, int dx, int dy) {
-                MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepMoveDwarfMessage(dwarfId, dx, dy));
-            }
-
-            @Override
-            public void removeDwarf(int dwarfId) {
-                MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepRemoveDwarfMessage(dwarfId));
-            }
-
-            @Override
-            public void hireDwarf() {
-                MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepHireDwarfMessage());
-            }
-
-            @Override
-            public void upgradeDwarf(int dwarfId) {
-                MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepUpgradeDwarfMessage(dwarfId));
-            }
-
-            @Override
-            public void sabotage(int playerId) {
-                MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepSabotageMessage(playerId));
-            }
-
-            @Override
-            public MineIntoTheDeepScores getScores() {
-                return MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepScoresMessage());
-            }
-
-            @Override
-            public MineIntoTheDeepSonarMessage.MineIntoTheDeepSonarResponse sonar(int x, int y) {
-                return MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepSonarMessage(x, y));
-            }
-        };
+        this.player = new MineIntoTheDeepPlayer();
     }
 
     private String readNextMessage() throws IOException {
@@ -209,5 +162,78 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
     @Override
     public IMineIntoTheDeepPlayer getPlayer() {
         return player;
+    }
+
+    public class MineIntoTheDeepPlayer implements IMineIntoTheDeepPlayer {
+        private final Map<Integer, PickageUpgrade> currentPickageUpgrades;
+
+        private MineIntoTheDeepPlayer() {
+            this.currentPickageUpgrades = new HashMap<>();
+        }
+
+        @Override
+        public int getMyPlayerId() {
+            return MineIntoTheDeepClient.this.teamNumber;
+        }
+
+        @Override
+        public int getTurnNumber() {
+            return MineIntoTheDeepClient.this.currentTurnNumber;
+        }
+
+        @Override
+        public PickageUpgrade getPickaxeUpgrade(int dwarfId) {
+            return this.currentPickageUpgrades.getOrDefault(dwarfId, PickageUpgrade.WOODEN);
+        }
+
+        @Override
+        public void endOfTurn() {
+            MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepEndTurnMessage());
+        }
+
+        @Override
+        public MineIntoTheDeepMap getMap() {
+            return MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepMapMessage());
+        }
+
+        @Override
+        public void moveDwarf(int dwarfId, int dx, int dy) {
+            MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepMoveDwarfMessage(dwarfId, dx, dy));
+        }
+
+        @Override
+        public void removeDwarf(int dwarfId) {
+            MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepRemoveDwarfMessage(dwarfId));
+        }
+
+        @Override
+        public void hireDwarf() {
+            MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepHireDwarfMessage());
+        }
+
+        @Override
+        public void upgradeDwarf(int dwarfId) {
+            PickageUpgrade currentPickageUpgrade = this.getPickaxeUpgrade(dwarfId);
+            if (currentPickageUpgrade.getNextUpgrade() == null)
+                throw new IllegalStateException("The pickaxe cannot be upgraded anymore");
+
+            MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepUpgradeDwarfMessage(dwarfId));
+            this.currentPickageUpgrades.put(dwarfId, currentPickageUpgrade.getNextUpgrade());
+        }
+
+        @Override
+        public void sabotage(int playerId) {
+            MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepSabotageMessage(playerId));
+        }
+
+        @Override
+        public MineIntoTheDeepScores getScores() {
+            return MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepScoresMessage());
+        }
+
+        @Override
+        public MineIntoTheDeepSonarMessage.MineIntoTheDeepSonarResponse sonar(int x, int y) {
+            return MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepSonarMessage(x, y));
+        }
     }
 }
