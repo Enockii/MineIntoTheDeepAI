@@ -14,7 +14,7 @@ public interface IMineIntoTheDeepPlayer {
     void moveDwarf(int dwarfId, int dx, int dy);
     void removeDwarf(int dwarfId);
     void hireDwarf();
-    void upgradeDwarf(int dwarfId);
+    void upgradePickaxe(int dwarfId);
     void sabotage(int playerId);
     MineIntoTheDeepScores getScores();
     MineIntoTheDeepSonarMessage.MineIntoTheDeepSonarResponse sonar(int x, int y);

@@ -212,12 +212,12 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
         }
 
         @Override
-        public void upgradeDwarf(int dwarfId) {
+        public void upgradePickaxe(int dwarfId) {
             PickageUpgrade currentPickageUpgrade = this.getPickaxeUpgrade(dwarfId);
             if (currentPickageUpgrade.getNextUpgrade() == null)
                 throw new IllegalStateException("The pickaxe cannot be upgraded anymore");
 
-            MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepUpgradeDwarfMessage(dwarfId));
+            MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepUpgradePickaxeMessage(dwarfId));
             this.currentPickageUpgrades.put(dwarfId, currentPickageUpgrade.getNextUpgrade());
         }
 

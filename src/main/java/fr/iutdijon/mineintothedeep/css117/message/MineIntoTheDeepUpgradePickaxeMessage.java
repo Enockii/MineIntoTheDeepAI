@@ -1,7 +1,7 @@
 package fr.iutdijon.mineintothedeep.css117.message;
 
-public class MineIntoTheDeepUpgradeDwarfMessage extends MineIntoTheDeepMessage<Void> {
-    public MineIntoTheDeepUpgradeDwarfMessage(int dwarfId) {
+public class MineIntoTheDeepUpgradePickaxeMessage extends MineIntoTheDeepMessage<Void> {
+    public MineIntoTheDeepUpgradePickaxeMessage(int dwarfId) {
         super(MineIntoTheDeepMessages.CLIENT_UPGRADE, Integer.toString(dwarfId));
     }
 
