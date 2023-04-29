@@ -2,6 +2,8 @@ package fr.iutdijon.mineintothedeep.css117.map;
 
 public class MineIntoTheDeepMapCell
 {
+    private int x;
+    private int y;
     private final int depth;
     private final int oreAmount;
     private final MineIntoTheDeepOreType oreType;
@@ -12,6 +14,19 @@ public class MineIntoTheDeepMapCell
         this.oreAmount = oreAmount;
         this.oreType = oreType;
         this.owner = owner;
+    }
+
+    public void setCoordinates(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     public int getDepth() {

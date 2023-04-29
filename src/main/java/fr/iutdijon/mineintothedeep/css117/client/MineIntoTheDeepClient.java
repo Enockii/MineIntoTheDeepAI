@@ -7,6 +7,7 @@ import fr.iutdijon.mineintothedeep.css117.message.*;
 import fr.iutdijon.mineintothedeep.css117.player.IMineIntoTheDeepPlayer;
 import fr.iutdijon.mineintothedeep.css117.player.PickageUpgrade;
 
+import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -165,10 +166,12 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
     }
 
     public class MineIntoTheDeepPlayer implements IMineIntoTheDeepPlayer {
-        private final Map<Integer, PickageUpgrade> currentPickageUpgrades;
+        private final Map<Integer, PickageUpgrade> currentPickaxeUpgrades;
+        private final Map<Integer, Point> dwarfPositions;
 
         private MineIntoTheDeepPlayer() {
-            this.currentPickageUpgrades = new HashMap<>();
+            this.currentPickaxeUpgrades = new HashMap<>();
+            this.dwarfPositions = new HashMap<>();
         }
 
         @Override
@@ -181,10 +184,17 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
             return MineIntoTheDeepClient.this.currentTurnNumber;
         }
 
+
         @Override
         public PickageUpgrade getPickaxeUpgrade(int dwarfId) {
-            return this.currentPickageUpgrades.getOrDefault(dwarfId, PickageUpgrade.WOODEN);
+            return this.currentPickaxeUpgrades.getOrDefault(dwarfId, PickageUpgrade.WOODEN);
         }
+
+        @Override
+        public Point getDwarfPosition(int dwarfId) {
+            return this.dwarfPositions.get(dwarfId);
+        }
+
 
         @Override
         public void endOfTurn() {
@@ -199,11 +209,13 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
         @Override
         public void moveDwarf(int dwarfId, int dx, int dy) {
             MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepMoveDwarfMessage(dwarfId, dx, dy));
+            this.dwarfPositions.put(dwarfId, new Point(dx, dy));
         }
 
         @Override
         public void removeDwarf(int dwarfId) {
             MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepRemoveDwarfMessage(dwarfId));
+            this.dwarfPositions.remove(dwarfId);
         }
 
         @Override
@@ -218,7 +230,7 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
                 throw new IllegalStateException("The pickaxe cannot be upgraded anymore");
 
             MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepUpgradePickaxeMessage(dwarfId));
-            this.currentPickageUpgrades.put(dwarfId, currentPickageUpgrade.getNextUpgrade());
+            this.currentPickaxeUpgrades.put(dwarfId, currentPickageUpgrade.getNextUpgrade());
         }
 
         @Override

@@ -20,6 +20,7 @@ public enum MineIntoTheDeepOreType {
         return switch (stringType) {
             case "RIEN" -> NOTHING;
             case "FER" -> IRON;
+            case "OR" -> GOLD;
             case "DIAMANT" -> DIAMOND;
             case "MITHRIL" -> MITHRIL;
             default -> throw new IllegalArgumentException("The ore type " + stringType + " is not valid");
