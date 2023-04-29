@@ -23,7 +23,6 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
     private Socket clientSocket;
     private BufferedInputStream inputStream;
     private BufferedOutputStream outputStream;
-    private Thread thread;
     //#endregion
 
     //#region Information
@@ -71,38 +70,35 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
         this.inputStream = new BufferedInputStream(this.clientSocket.getInputStream());
         this.outputStream = new BufferedOutputStream(this.clientSocket.getOutputStream());
 
-        this.thread = new Thread(() -> {
-            while (true) {
-                try {
-                    String[] messages = MineIntoTheDeepClient.this.readNextMessage().split("\\|");
-                    if (messages.length == 0)
-                        throw new IllegalStateException("The server has sent an empty message");
+        while (true) {
+            try {
+                String[] messages = MineIntoTheDeepClient.this.readNextMessage().split("\\|");
+                if (messages.length == 0)
+                    throw new IllegalStateException("The server has sent an empty message");
 
-                    if (messages[0].equals(MineIntoTheDeepMessages.SERVER_CONNECTED))
-                        this.teamNumber = this.sendMessage(new MineIntoTheDeepPresentationMessage(this.teamName));
+                if (messages[0].equals(MineIntoTheDeepMessages.SERVER_CONNECTED))
+                    this.teamNumber = this.sendMessage(new MineIntoTheDeepPresentationMessage(this.teamName));
 
-                    else if (messages[0].equals(MineIntoTheDeepMessages.SERVER_MY_TURN)) {
-                        if (messages.length < 2)
-                            throw new IllegalStateException("The server did not sent the turn number");
+                else if (messages[0].equals(MineIntoTheDeepMessages.SERVER_MY_TURN)) {
+                    if (messages.length < 2)
+                        throw new IllegalStateException("The server did not sent the turn number");
 
-                        this.currentTurnNumber = Integer.parseInt(messages[1]);
-                        try {
-                            this.mineIntoTheDeepClientAI.play(MineIntoTheDeepClient.this.player);
-                        } catch (Exception e) {
-                            System.err.println("An error occurred while playing the turn");
-                            e.printStackTrace();
-                        }
+                    this.currentTurnNumber = Integer.parseInt(messages[1]);
+                    try {
+                        this.mineIntoTheDeepClientAI.play(MineIntoTheDeepClient.this.player);
+                    } catch (Exception e) {
+                        System.err.println("An error occurred while playing the turn");
+                        e.printStackTrace();
                     }
-
-                    else
-                        throw new IllegalStateException("The server has sent an unknown message: " + messages[0]);
-                } catch (IOException e) {
-                    break;
                 }
+
+                else
+                    throw new IllegalStateException("The server has sent an unknown message: " + messages[0]);
+            } catch (IOException e) {
+                break;
             }
-            throw new RuntimeException("The connection has been lost");
-        });
-        this.thread.start();
+        }
+        throw new RuntimeException("The connection has been lost");
     }
 
     @Override

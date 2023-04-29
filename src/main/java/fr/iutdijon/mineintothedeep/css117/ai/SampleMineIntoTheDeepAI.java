@@ -16,6 +16,8 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
     private int dwarfAmount = 1;
     private int maxKnownDepth = 10;
     private boolean lastLayerIsKnown = false;
+    private boolean[] dwarfToRemove = new boolean[] { false, false, false };
+    private boolean[] dwarfRemoved = new boolean[] { false, false, false };
 
     @Override
     public void play(IMineIntoTheDeepPlayer player) {
@@ -33,6 +35,9 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
             if (actionPoint <= 0)
                 break;
 
+            if (dwarfRemoved[dwarfId])
+                continue;
+
             Point dwarfPositionCoordinates = player.getDwarfPosition(dwarfId);
             MineIntoTheDeepMapCell dwarfCell = dwarfPositionCoordinates != null ? map.getCell(dwarfPositionCoordinates.x, dwarfPositionCoordinates.y) : null;
             int depth = dwarfCell != null ? dwarfCell.getDepth() : 0;
@@ -46,8 +51,43 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
                     MineIntoTheDeepMapCell bestCell = map.getBetterCell(true, maxKnownDepth);
                     if (bestCell == null) {
                         player.removeDwarf(dwarfId);
+                        actionPoint--;
+                        continue;
+                    } else {
+                        player.moveDwarf(dwarfId, bestCell.getX(), bestCell.getY());
+                        actionPoint--;
                     }
-                    else {
+                }
+
+                if (lastLayerIsKnown && maxKnownDepth - depth <= 4 && actionPoint > 0) {
+                    MineIntoTheDeepSonarMessage.MineIntoTheDeepSonarResponse sonarResponse = player.sonar(dwarfPositionCoordinates.x, dwarfPositionCoordinates.y);
+                    int sonarValue = sonarResponse.getValueInHigherLayer() + sonarResponse.getValueInHigherLayerMinus1() + sonarResponse.getValueInHigherLayerMinus2() + sonarResponse.getValueInHigherLayerMinus3();
+                    actionPoint--;
+
+                    if (actionPoint > 0 && sonarValue <= 0) {
+                        MineIntoTheDeepMapCell bestCell = map.getBetterCell(true, maxKnownDepth);
+                        if (bestCell == null) {
+                            player.removeDwarf(dwarfId);
+                            actionPoint--;
+                            continue;
+                        } else {
+                            player.moveDwarf(dwarfId, bestCell.getX(), bestCell.getY());
+                            actionPoint--;
+                        }
+                    }
+                    else if (actionPoint < 1 && sonarValue <= 0) {
+                        dwarfToRemove[dwarfId] = true;
+                        continue;
+                    }
+                }
+
+                if (actionPoint > 0 && dwarfToRemove[dwarfId]) {
+                    MineIntoTheDeepMapCell bestCell = map.getBetterCell(true, maxKnownDepth);
+                    if (bestCell == null) {
+                        player.removeDwarf(dwarfId);
+                        actionPoint--;
+                        continue;
+                    } else {
                         player.moveDwarf(dwarfId, bestCell.getX(), bestCell.getY());
                         actionPoint--;
                     }
@@ -76,10 +116,14 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
                 dwarfCell = dwarfPositionCoordinates != null ? map.getCell(dwarfPositionCoordinates.x, dwarfPositionCoordinates.y) : null;
                 depth = dwarfCell != null ? dwarfCell.getDepth() : 0;
 
+                if (actionPoint == 0)
+                    continue;
+
                 if (depth < maxKnownDepth) {
                     MineIntoTheDeepMapCell bestCell = map.getBetterCell(true, maxKnownDepth);
                     if (bestCell == null) {
                         player.removeDwarf(dwarfId);
+                        actionPoint--;
                     }
                     else if (dwarfCell == null || dwarfCell.getOreType().getValue() < bestCell.getOreType().getValue()) {
                         player.moveDwarf(dwarfId, bestCell.getX(), bestCell.getY());
