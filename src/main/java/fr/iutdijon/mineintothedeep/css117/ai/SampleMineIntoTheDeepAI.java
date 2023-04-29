@@ -28,11 +28,10 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
 
         int actionPoint = 2;
 
-        for (int dwarfId = 0; dwarfId < dwarfAmount; dwarfId++) {
+        for (int dwarfId = 0; dwarfId < dwarfAmount; dwarfId++)
+        {
             if (actionPoint <= 0)
                 break;
-
-            System.out.println("Thinking about dwarf " + dwarfId + "...");
 
             Point dwarfPositionCoordinates = player.getDwarfPosition(dwarfId);
             MineIntoTheDeepMapCell dwarfCell = dwarfPositionCoordinates != null ? map.getCell(dwarfPositionCoordinates.x, dwarfPositionCoordinates.y) : null;
@@ -91,7 +90,6 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
                     actionPoint = refreshMaxKnownDepth(player, actionPoint, dwarfCell);
                 }
             }
-            System.out.println("\n\n\n");
         }
 
         player.endOfTurn();
@@ -99,7 +97,6 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
 
     private int refreshMaxKnownDepth(IMineIntoTheDeepPlayer player, int actionPoint, MineIntoTheDeepMapCell dwarfCell)
     {
-        System.out.println("SONAR ON X: " + dwarfCell.getX() + " Y: " + dwarfCell.getY());
         MineIntoTheDeepSonarMessage.MineIntoTheDeepSonarResponse sonarResponse = player.sonar(dwarfCell.getX(), dwarfCell.getY());
         actionPoint--;
         if (sonarResponse.getValueInHigherLayerMinus3() == -1) {
@@ -116,7 +113,6 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
         }
         else
             maxKnownDepth = dwarfCell.getDepth() + 3;
-        System.out.println("MAX KNOWN DEPTH: " + maxKnownDepth);
         return actionPoint;
     }
 }

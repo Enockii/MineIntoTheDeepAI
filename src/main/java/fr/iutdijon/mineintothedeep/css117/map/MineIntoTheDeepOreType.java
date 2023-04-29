@@ -17,13 +17,13 @@ public enum MineIntoTheDeepOreType {
     }
 
     public static MineIntoTheDeepOreType fromString(String stringType) {
-        return switch (stringType) {
-            case "RIEN" -> NOTHING;
-            case "FER" -> IRON;
-            case "OR" -> GOLD;
-            case "DIAMANT" -> DIAMOND;
-            case "MITHRIL" -> MITHRIL;
-            default -> throw new IllegalArgumentException("The ore type " + stringType + " is not valid");
-        };
+        switch (stringType) {
+            case "RIEN": return MineIntoTheDeepOreType.NOTHING;
+            case "FER": return MineIntoTheDeepOreType.IRON;
+            case "OR": return MineIntoTheDeepOreType.GOLD;
+            case "DIAMANT": return MineIntoTheDeepOreType.DIAMOND;
+            case "MITHRIL": return MineIntoTheDeepOreType.MITHRIL;
+            default: throw new IllegalArgumentException("The ore type " + stringType + " is not valid");
+        }
     }
 }

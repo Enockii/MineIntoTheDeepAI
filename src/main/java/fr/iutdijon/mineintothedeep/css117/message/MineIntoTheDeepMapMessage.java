@@ -5,6 +5,7 @@ import fr.iutdijon.mineintothedeep.css117.map.MineIntoTheDeepMapCell;
 import fr.iutdijon.mineintothedeep.css117.map.MineIntoTheDeepOreType;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MineIntoTheDeepMapMessage extends MineIntoTheDeepMessage<MineIntoTheDeepMap> {
@@ -30,7 +31,7 @@ public class MineIntoTheDeepMapMessage extends MineIntoTheDeepMessage<MineIntoTh
             catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Invalid cell: " + rawCell);
             }
-        }).toList();
+        }).collect(Collectors.toList());
 
         return new MineIntoTheDeepResponse<>(new MineIntoTheDeepMap(cells), null);
     }
