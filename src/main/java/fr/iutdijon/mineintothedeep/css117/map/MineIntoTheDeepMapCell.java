@@ -44,4 +44,16 @@ public class MineIntoTheDeepMapCell
     public int getOwner() {
         return owner;
     }
+
+    @Override
+    public String toString() {
+        return "MineIntoTheDeepMapCell{" +
+                "x=" + x +
+                ", y=" + y +
+                ", depth=" + depth +
+                ", oreAmount=" + oreAmount +
+                ", oreType=" + oreType +
+                ", owner=" + owner +
+                '}';
+    }
 }

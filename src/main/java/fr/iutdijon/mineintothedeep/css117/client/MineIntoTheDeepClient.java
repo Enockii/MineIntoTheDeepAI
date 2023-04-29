@@ -5,7 +5,7 @@ import fr.iutdijon.mineintothedeep.css117.MineIntoTheDeepScores;
 import fr.iutdijon.mineintothedeep.css117.ai.MineIntoTheDeepAI;
 import fr.iutdijon.mineintothedeep.css117.message.*;
 import fr.iutdijon.mineintothedeep.css117.player.IMineIntoTheDeepPlayer;
-import fr.iutdijon.mineintothedeep.css117.player.PickageUpgrade;
+import fr.iutdijon.mineintothedeep.css117.player.PickaxeUpgrade;
 
 import java.awt.*;
 import java.io.BufferedInputStream;
@@ -166,7 +166,7 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
     }
 
     public class MineIntoTheDeepPlayer implements IMineIntoTheDeepPlayer {
-        private final Map<Integer, PickageUpgrade> currentPickaxeUpgrades;
+        private final Map<Integer, PickaxeUpgrade> currentPickaxeUpgrades;
         private final Map<Integer, Point> dwarfPositions;
 
         private MineIntoTheDeepPlayer() {
@@ -186,8 +186,8 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
 
 
         @Override
-        public PickageUpgrade getPickaxeUpgrade(int dwarfId) {
-            return this.currentPickaxeUpgrades.getOrDefault(dwarfId, PickageUpgrade.WOODEN);
+        public PickaxeUpgrade getPickaxeUpgrade(int dwarfId) {
+            return this.currentPickaxeUpgrades.getOrDefault(dwarfId, PickaxeUpgrade.WOODEN);
         }
 
         @Override
@@ -225,12 +225,12 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
 
         @Override
         public void upgradePickaxe(int dwarfId) {
-            PickageUpgrade currentPickageUpgrade = this.getPickaxeUpgrade(dwarfId);
-            if (currentPickageUpgrade.getNextUpgrade() == null)
+            PickaxeUpgrade currentPickaxeUpgrade = this.getPickaxeUpgrade(dwarfId);
+            if (currentPickaxeUpgrade.getNextUpgrade() == null)
                 throw new IllegalStateException("The pickaxe cannot be upgraded anymore");
 
             MineIntoTheDeepClient.this.sendMessage(new MineIntoTheDeepUpgradePickaxeMessage(dwarfId));
-            this.currentPickaxeUpgrades.put(dwarfId, currentPickageUpgrade.getNextUpgrade());
+            this.currentPickaxeUpgrades.put(dwarfId, currentPickaxeUpgrade.getNextUpgrade());
         }
 
         @Override

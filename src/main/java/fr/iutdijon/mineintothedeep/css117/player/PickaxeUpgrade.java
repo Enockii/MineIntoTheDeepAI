@@ -1,14 +1,14 @@
 package fr.iutdijon.mineintothedeep.css117.player;
 
-public enum PickageUpgrade {
+public enum PickaxeUpgrade {
     DIAMOND(400, null),
-    IRON(200, PickageUpgrade.DIAMOND),
-    WOODEN(null, PickageUpgrade.IRON);
+    IRON(200, PickaxeUpgrade.DIAMOND),
+    WOODEN(null, PickaxeUpgrade.IRON);
 
     private final Integer cost;
-    private final PickageUpgrade nextUpgrade;
+    private final PickaxeUpgrade nextUpgrade;
 
-    PickageUpgrade(Integer cost, PickageUpgrade nextUpgrade) {
+    PickaxeUpgrade(Integer cost, PickaxeUpgrade nextUpgrade) {
         this.cost = cost;
         this.nextUpgrade = nextUpgrade;
     }
@@ -17,7 +17,7 @@ public enum PickageUpgrade {
         return cost;
     }
 
-    public PickageUpgrade getNextUpgrade() {
+    public PickaxeUpgrade getNextUpgrade() {
         return nextUpgrade;
     }
 }

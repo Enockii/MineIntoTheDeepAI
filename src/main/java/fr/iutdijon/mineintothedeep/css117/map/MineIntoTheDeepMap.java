@@ -43,10 +43,10 @@ public class MineIntoTheDeepMap {
         return cells;
     }
 
-    public MineIntoTheDeepMapCell getBetterCell(boolean whereIsNoOne) {
+    public MineIntoTheDeepMapCell getBetterCell(boolean whereIsNoOne, int maxDepthExclusive) {
         MineIntoTheDeepMapCell betterCell = null;
         for (MineIntoTheDeepMapCell cell : cells) {
-            if ((betterCell == null || cell.getOreType().getValue() > betterCell.getOreType().getValue()) && (!whereIsNoOne || cell.getOwner() == -1))
+            if ((betterCell == null || cell.getOreType().getValue() > betterCell.getOreType().getValue()) && (!whereIsNoOne || cell.getOwner() == -1) && cell.getDepth() < maxDepthExclusive - 1)
                 betterCell = cell;
         }
         return betterCell;

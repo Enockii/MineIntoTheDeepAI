@@ -10,7 +10,7 @@ public interface IMineIntoTheDeepPlayer {
     int getMyPlayerId();
     int getTurnNumber();
 
-    PickageUpgrade getPickaxeUpgrade(int dwarfId);
+    PickaxeUpgrade getPickaxeUpgrade(int dwarfId);
     Point getDwarfPosition(int dwarfId);
 
     void endOfTurn();

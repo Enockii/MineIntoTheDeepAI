@@ -3,14 +3,19 @@ package fr.iutdijon.mineintothedeep.css117.ai;
 import fr.iutdijon.mineintothedeep.css117.map.MineIntoTheDeepMap;
 import fr.iutdijon.mineintothedeep.css117.MineIntoTheDeepScores;
 import fr.iutdijon.mineintothedeep.css117.map.MineIntoTheDeepMapCell;
+import fr.iutdijon.mineintothedeep.css117.message.MineIntoTheDeepSonarMessage;
 import fr.iutdijon.mineintothedeep.css117.player.IMineIntoTheDeepPlayer;
-import fr.iutdijon.mineintothedeep.css117.player.PickageUpgrade;
+import fr.iutdijon.mineintothedeep.css117.player.PickaxeUpgrade;
+
+import java.awt.*;
 
 public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
 
     private final int HIRING_COST = 250;
 
     private int dwarfAmount = 1;
+    private int maxKnownDepth = 10;
+    private boolean lastLayerIsKnown = false;
 
     @Override
     public void play(IMineIntoTheDeepPlayer player) {
@@ -23,32 +28,95 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
 
         int actionPoint = 2;
 
-        for (int i = 0; i < dwarfAmount; i++) {
+        for (int dwarfId = 0; dwarfId < dwarfAmount; dwarfId++) {
             if (actionPoint <= 0)
                 break;
 
-            PickageUpgrade upgrade = player.getPickaxeUpgrade(i);
-            if (upgrade == PickageUpgrade.DIAMOND && myScore >= HIRING_COST) {
-                player.hireDwarf();
-                actionPoint--;
-                myScore -= HIRING_COST;
-            }
-            else if (upgrade == PickageUpgrade.IRON && myScore >= PickageUpgrade.DIAMOND.getCost()) {
-                player.upgradePickaxe(i);
-                actionPoint--;
-                myScore -= PickageUpgrade.DIAMOND.getCost();
-            }
-            else if (upgrade == PickageUpgrade.WOODEN && myScore >= PickageUpgrade.IRON.getCost()) {
-                player.upgradePickaxe(i);
-                actionPoint--;
-                myScore -= PickageUpgrade.IRON.getCost();
-            }
+            System.out.println("Thinking about dwarf " + dwarfId + "...");
 
-            MineIntoTheDeepMapCell bestCell = map.getBetterCell(true);
-            player.moveDwarf(i, bestCell.getX(), bestCell.getY());
-            actionPoint--;
+            Point dwarfPositionCoordinates = player.getDwarfPosition(dwarfId);
+            MineIntoTheDeepMapCell dwarfCell = dwarfPositionCoordinates != null ? map.getCell(dwarfPositionCoordinates.x, dwarfPositionCoordinates.y) : null;
+            int depth = dwarfCell != null ? dwarfCell.getDepth() : 0;
+
+            if (depth + 1 == maxKnownDepth)
+            {
+                if (!lastLayerIsKnown)
+                    actionPoint = refreshMaxKnownDepth(player, actionPoint, dwarfCell);
+
+                if (depth + 1 == maxKnownDepth) {
+                    MineIntoTheDeepMapCell bestCell = map.getBetterCell(true, maxKnownDepth);
+                    if (bestCell == null) {
+                        player.removeDwarf(dwarfId);
+                    }
+                    else {
+                        player.moveDwarf(dwarfId, bestCell.getX(), bestCell.getY());
+                        actionPoint--;
+                    }
+                }
+            }
+            else {
+                PickaxeUpgrade upgrade = player.getPickaxeUpgrade(dwarfId);
+                if (upgrade == PickaxeUpgrade.DIAMOND && myScore >= HIRING_COST && dwarfAmount < 3) {
+                    player.hireDwarf();
+                    dwarfAmount++;
+                    actionPoint--;
+                    myScore -= HIRING_COST;
+                }
+                else if (upgrade == PickaxeUpgrade.IRON && myScore >= PickaxeUpgrade.DIAMOND.getCost()) {
+                    player.upgradePickaxe(dwarfId);
+                    actionPoint--;
+                    myScore -= PickaxeUpgrade.DIAMOND.getCost();
+                }
+                else if (upgrade == PickaxeUpgrade.WOODEN && myScore >= PickaxeUpgrade.IRON.getCost()) {
+                    player.upgradePickaxe(dwarfId);
+                    actionPoint--;
+                    myScore -= PickaxeUpgrade.IRON.getCost();
+                }
+
+                dwarfPositionCoordinates = player.getDwarfPosition(dwarfId);
+                dwarfCell = dwarfPositionCoordinates != null ? map.getCell(dwarfPositionCoordinates.x, dwarfPositionCoordinates.y) : null;
+                depth = dwarfCell != null ? dwarfCell.getDepth() : 0;
+
+                if (depth < maxKnownDepth) {
+                    MineIntoTheDeepMapCell bestCell = map.getBetterCell(true, maxKnownDepth);
+                    if (bestCell == null) {
+                        player.removeDwarf(dwarfId);
+                    }
+                    else if (dwarfCell == null || dwarfCell.getOreType().getValue() < bestCell.getOreType().getValue()) {
+                        player.moveDwarf(dwarfId, bestCell.getX(), bestCell.getY());
+                        actionPoint--;
+                    }
+                }
+                else {
+                    actionPoint = refreshMaxKnownDepth(player, actionPoint, dwarfCell);
+                }
+            }
+            System.out.println("\n\n\n");
         }
 
         player.endOfTurn();
+    }
+
+    private int refreshMaxKnownDepth(IMineIntoTheDeepPlayer player, int actionPoint, MineIntoTheDeepMapCell dwarfCell)
+    {
+        System.out.println("SONAR ON X: " + dwarfCell.getX() + " Y: " + dwarfCell.getY());
+        MineIntoTheDeepSonarMessage.MineIntoTheDeepSonarResponse sonarResponse = player.sonar(dwarfCell.getX(), dwarfCell.getY());
+        actionPoint--;
+        if (sonarResponse.getValueInHigherLayerMinus3() == -1) {
+            maxKnownDepth = dwarfCell.getDepth() + 3;
+            lastLayerIsKnown = true;
+        }
+        else if (sonarResponse.getValueInHigherLayerMinus2() == -1) {
+            maxKnownDepth = dwarfCell.getDepth() + 2;
+            lastLayerIsKnown = true;
+        }
+        else if (sonarResponse.getValueInHigherLayerMinus1() == -1) {
+            maxKnownDepth = dwarfCell.getDepth() + 1;
+            lastLayerIsKnown = true;
+        }
+        else
+            maxKnownDepth = dwarfCell.getDepth() + 3;
+        System.out.println("MAX KNOWN DEPTH: " + maxKnownDepth);
+        return actionPoint;
     }
 }
