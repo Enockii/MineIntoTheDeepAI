@@ -51,6 +51,7 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
                     MineIntoTheDeepMapCell bestCell = map.getBetterCell(true, maxKnownDepth);
                     if (bestCell == null) {
                         player.removeDwarf(dwarfId);
+                        dwarfRemoved[dwarfId] = true;
                         actionPoint--;
                         continue;
                     } else {
@@ -68,6 +69,7 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
                         MineIntoTheDeepMapCell bestCell = map.getBetterCell(true, maxKnownDepth);
                         if (bestCell == null) {
                             player.removeDwarf(dwarfId);
+                            dwarfRemoved[dwarfId] = true;
                             actionPoint--;
                             continue;
                         } else {
@@ -85,6 +87,7 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
                     MineIntoTheDeepMapCell bestCell = map.getBetterCell(true, maxKnownDepth);
                     if (bestCell == null) {
                         player.removeDwarf(dwarfId);
+                        dwarfRemoved[dwarfId] = true;
                         actionPoint--;
                         continue;
                     } else {
@@ -123,6 +126,7 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
                     MineIntoTheDeepMapCell bestCell = map.getBetterCell(true, maxKnownDepth);
                     if (bestCell == null) {
                         player.removeDwarf(dwarfId);
+                        dwarfRemoved[dwarfId] = true;
                         actionPoint--;
                     }
                     else if (dwarfCell == null || dwarfCell.getOreType().getValue() < bestCell.getOreType().getValue()) {
