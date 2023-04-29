@@ -14,7 +14,7 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
         MineIntoTheDeepScores scores = player.getScores();
         int myScore = scores.getScore(player.getMyPlayerId());
 
-        if
+        // TODO: Implement your AI here
 
         throw new UnsupportedOperationException("Not implemented yet !");
     }
