@@ -23,15 +23,22 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
     public void play(IMineIntoTheDeepPlayer player) {
         // It's our turn!
 
+        System.out.println("DwarfAmount : " + dwarfAmount);
+        System.out.println("Max Known Depth : " + maxKnownDepth);
+        System.out.println("Last layer is known : " + lastLayerIsKnown);
+
         // Get the current map and the current scores
         MineIntoTheDeepMap map = player.getMap();
         MineIntoTheDeepScores scores = player.getScores();
         int myScore = scores.getScore(player.getMyPlayerId());
 
         int actionPoint = 2;
+        System.out.println("Action point start : " + actionPoint);
 
         for (int dwarfId = 0; dwarfId < dwarfAmount; dwarfId++)
         {
+
+            System.out.println("Dwarf id : " + dwarfId);
             if (actionPoint <= 0)
                 break;
 
@@ -41,6 +48,7 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
             Point dwarfPositionCoordinates = player.getDwarfPosition(dwarfId);
             MineIntoTheDeepMapCell dwarfCell = dwarfPositionCoordinates != null ? map.getCell(dwarfPositionCoordinates.x, dwarfPositionCoordinates.y) : null;
             int depth = dwarfCell != null ? dwarfCell.getDepth() : 0;
+            System.out.println(depth);
 
             if (depth + 1 == maxKnownDepth)
             {
@@ -97,6 +105,7 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
                 }
             }
             else {
+                System.out.println("Action point upgrades etc : " + actionPoint);
                 PickaxeUpgrade upgrade = player.getPickaxeUpgrade(dwarfId);
                 if (upgrade == PickaxeUpgrade.DIAMOND && myScore >= HIRING_COST && dwarfAmount < 3) {
                     player.hireDwarf();
@@ -139,7 +148,8 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
                 }
             }
         }
-
+        System.out.println("Action point end : " + actionPoint);
+        System.out.println("-----------------------------------------------");
         player.endOfTurn();
     }
 
@@ -147,16 +157,38 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
     {
         MineIntoTheDeepSonarMessage.MineIntoTheDeepSonarResponse sonarResponse = player.sonar(dwarfCell.getX(), dwarfCell.getY());
         actionPoint--;
-        if (sonarResponse.getValueInHigherLayerMinus3() == -1) {
+        System.out.println(sonarResponse.toString());
+        /*if (sonarResponse.getValueInHigherLayerMinus3() == -1) {
             maxKnownDepth = dwarfCell.getDepth() + 3;
+            System.out.println("coucou1 : " + maxKnownDepth);
             lastLayerIsKnown = true;
         }
         else if (sonarResponse.getValueInHigherLayerMinus2() == -1) {
             maxKnownDepth = dwarfCell.getDepth() + 2;
+            System.out.println("coucou2 : " + maxKnownDepth);
             lastLayerIsKnown = true;
         }
         else if (sonarResponse.getValueInHigherLayerMinus1() == -1) {
             maxKnownDepth = dwarfCell.getDepth() + 1;
+            System.out.println("coucou3 : " + maxKnownDepth);
+            lastLayerIsKnown = true;
+        }
+        else
+            maxKnownDepth = dwarfCell.getDepth() + 3;*/
+
+        if (sonarResponse.getValueInHigherLayerMinus1() == -1) {
+            maxKnownDepth = dwarfCell.getDepth() + 3;
+            System.out.println("coucou1 : " + maxKnownDepth);
+            lastLayerIsKnown = true;
+        }
+        else if (sonarResponse.getValueInHigherLayerMinus2() == -1) {
+            maxKnownDepth = dwarfCell.getDepth() + 2;
+            System.out.println("coucou2 : " + maxKnownDepth);
+            lastLayerIsKnown = true;
+        }
+        else if (sonarResponse.getValueInHigherLayerMinus3() == -1) {
+            maxKnownDepth = dwarfCell.getDepth() + 1;
+            System.out.println("coucou3 : " + maxKnownDepth);
             lastLayerIsKnown = true;
         }
         else
