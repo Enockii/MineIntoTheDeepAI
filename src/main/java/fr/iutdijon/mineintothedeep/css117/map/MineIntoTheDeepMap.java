@@ -46,8 +46,19 @@ public class MineIntoTheDeepMap {
     public MineIntoTheDeepMapCell getBetterCell(boolean whereIsNoOne, int maxDepthExclusive) {
         MineIntoTheDeepMapCell betterCell = null;
         for (MineIntoTheDeepMapCell cell : cells) {
-            if ((betterCell == null || cell.getOreType().getValue() > betterCell.getOreType().getValue()) && (!whereIsNoOne || cell.getOwner() == -1) && cell.getDepth() < maxDepthExclusive - 1)
-                betterCell = cell;
+            /*if ((betterCell == null || cell.getOreType().getValue() > betterCell.getOreType().getValue()) && (!whereIsNoOne || cell.getOwner() == -1) && cell.getDepth() < maxDepthExclusive - 1)
+                betterCell = cell;*/
+            if ((betterCell == null || cell.getOreType().getValue() > betterCell.getOreType().getValue()) ) {
+                System.out.println("1");
+                if ((!whereIsNoOne || cell.getOwner() == -1)) {
+                    System.out.println("2");
+                    System.out.println("cell.getDepth : " + cell.getDepth());
+                    System.out.println("maxDepthExclusive - 1 : " + (maxDepthExclusive - 1));
+                    if (cell.getDepth() < maxDepthExclusive - 1) {
+                        betterCell = cell;
+                    }
+                }
+            }
         }
         return betterCell;
     }
