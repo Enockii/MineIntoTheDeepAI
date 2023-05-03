@@ -49,13 +49,6 @@ public class MineIntoTheDeepMap {
 
             if ((betterCell == null || cell.getOreType().getValue() > betterCell.getOreType().getValue()) && (!whereIsNoOne || cell.getOwner() == -1) && cell.getDepth() < maxDepthExclusive - 1)
                 betterCell = cell;
-            /*if ((betterCell == null || cell.getOreType().getValue() > betterCell.getOreType().getValue()) ) {
-                if (cell.getOwner() == -1) {
-                    if (cell.getDepth() < maxDepthExclusive - 1) {
-                        betterCell = cell;
-                    }
-                }
-            }*/
         }
         return betterCell;
     }
