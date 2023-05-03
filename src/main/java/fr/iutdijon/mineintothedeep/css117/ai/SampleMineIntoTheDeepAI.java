@@ -143,11 +143,6 @@ public class SampleMineIntoTheDeepAI implements MineIntoTheDeepAI {
             }
         }
 
-        int numberOfRemoved = 0;
-        for (Boolean nain : dwarfRemoved) {
-            if (nain)
-                numberOfRemoved += 1;
-        }
         player.endOfTurn();
     }
 
