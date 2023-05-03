@@ -50,5 +50,15 @@ public class MineIntoTheDeepSonarMessage extends MineIntoTheDeepMessage<MineInto
         public int getValueInHigherLayerMinus3() {
             return valueInHigherLayerMinus3;
         }
+
+        @Override
+        public String toString() {
+            return "MineIntoTheDeepSonarResponse{" +
+                    "valueInHigherLayer=" + valueInHigherLayer +
+                    ", valueInHigherLayerMinus1=" + valueInHigherLayerMinus1 +
+                    ", valueInHigherLayerMinus2=" + valueInHigherLayerMinus2 +
+                    ", valueInHigherLayerMinus3=" + valueInHigherLayerMinus3 +
+                    '}';
+        }
     }
 }
