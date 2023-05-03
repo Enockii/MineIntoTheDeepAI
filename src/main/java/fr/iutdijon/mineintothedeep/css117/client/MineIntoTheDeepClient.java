@@ -121,7 +121,6 @@ public class MineIntoTheDeepClient implements IMineIntoTheDeepClient {
                 return null;
 
             String rawResponse = this.readNextMessage();
-            System.out.println(rawResponse);
             try {
                 MineIntoTheDeepResponse<T> response = message.parse(rawResponse.split("\\|"));
 
